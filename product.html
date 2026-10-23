@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product | VOLTURA</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="logo"><div class="logo-icon">V</div> VOLTURA</a>
+      <div class="top-actions">
+        <a href="index.html" class="btn btn-outline btn-sm">← Back to listings</a>
+        <a href="https://wa.me/2787412314" class="btn btn-whatsapp btn-sm" target="_blank">WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top:24px">
+    <div id="productContent"></div>
+  </div>
+
+  <script src="js/products.js"></script>
+  <script>
+    const id = new URLSearchParams(location.search).get('id');
+    const p = getProduct(id);
+    if (!p) {
+      document.getElementById('productContent').innerHTML = '<p>Product not found. <a href="index.html">Back to listings</a></p>';
+    } else {
+      document.title = p.name + ' | VOLTURA';
+      document.getElementById('productContent').innerHTML = `
+        <div class="product-detail">
+          <div>
+            <img src="${p.images[0]}" alt="${p.name}">
+          </div>
+          <div>
+            <p style="color:var(--secondary);font-size:0.85rem;margin-bottom:6px">${p.category} · ${p.condition}</p>
+            <h1>${p.name}</h1>
+            <div class="price">${formatPrice(p.price)}</div>
+            ${p.comparePrice ? `<p style="color:var(--secondary);text-decoration:line-through;margin-top:-8px;margin-bottom:12px">${formatPrice(p.comparePrice)}</p>` : ''}
+            <p class="desc">${p.description}</p>
+            <p style="margin-bottom:8px"><strong>Availability:</strong> ${p.available ? 'In stock' : 'Currently unavailable'}</p>
+            <p style="margin-bottom:8px"><strong>Colours:</strong> ${p.colors.join(', ')}</p>
+            <p style="margin-bottom:20px;font-size:0.9rem;color:var(--secondary)">
+              Collection available at: 255 Nightingale Street, Mofolo South, Soweto, 1801<br>
+              Delivery options confirmed via WhatsApp.
+            </p>
+            <div class="detail-actions">
+              <a href="${whatsappLink(p)}" class="btn btn-whatsapp" target="_blank" style="width:100%;padding:14px">Order on WhatsApp</a>
+              <button class="btn btn-outline" style="width:100%" onclick="addToBasket()">Add to Basket</button>
+            </div>
+          </div>
+        </div>
+        <p style="margin-top:24px;font-size:0.85rem;color:var(--secondary)">
+          <em>Note: Prices and availability are subject to confirmation. No online payment is processed on this site. Final order details are arranged via WhatsApp.</em>
+        </p>
+      `;
+    }
+    function addToBasket() {
+      let cart = JSON.parse(localStorage.getItem('voltura_mp_cart') || '[]');
+      const existing = cart.find(i => i.id === id);
+      if (existing) existing.qty += 1;
+      else cart.push({ id, qty: 1 });
+      localStorage.setItem('voltura_mp_cart', JSON.stringify(cart));
+      alert('Added to basket. Return to the main page to view your basket and order via WhatsApp.');
+    }
+  </script>
+</body>
+</html>
